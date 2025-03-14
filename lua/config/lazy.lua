@@ -19,6 +19,30 @@ require("lazy").setup({
     -- add LazyVim and import its plugins
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     -- import/override with your plugins
+    { import = "lazyvim.plugins.extras.coding.mini-comment" },
+    { import = "lazyvim.plugins.extras.coding.mini-surround" },
+    { import = "lazyvim.plugins.extras.coding.yanky" },
+    { import = "lazyvim.plugins.extras.dap.core" },
+    { import = "lazyvim.plugins.extras.dap.nlua" },
+    { import = "lazyvim.plugins.extras.editor.dial" },
+    { import = "lazyvim.plugins.extras.editor.mini-move" },
+    { import = "lazyvim.plugins.extras.editor.neo-tree" },
+    { import = "lazyvim.plugins.extras.editor.telescope" },
+    { import = "lazyvim.plugins.extras.lang.git" },
+    { import = "lazyvim.plugins.extras.lang.go" },
+    { import = "lazyvim.plugins.extras.lang.json" },
+    { import = "lazyvim.plugins.extras.lang.markdown" },
+    { import = "lazyvim.plugins.extras.lang.nix" },
+    { import = "lazyvim.plugins.extras.lang.python" },
+    { import = "lazyvim.plugins.extras.lang.rust" },
+    { import = "lazyvim.plugins.extras.lang.sql" },
+    { import = "lazyvim.plugins.extras.lang.terraform" },
+    { import = "lazyvim.plugins.extras.lang.toml" },
+    { import = "lazyvim.plugins.extras.lang.yaml" },
+    { import = "lazyvim.plugins.extras.test.core" },
+    { import = "lazyvim.plugins.extras.ui.treesitter-context" },
+    { import = "lazyvim.plugins.extras.util.dot" },
+    { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
     { import = "plugins" },
   },
   defaults = {
@@ -51,3 +75,29 @@ require("lazy").setup({
     },
   },
 })
+
+
+vim.g.rustaceanvim = function()
+  -- Update this path
+  local extension_path = vim.env.HOME .. '/Users/anishraghavan/.local/share/nvim/mason/packages/codelldb/extension/'
+  local codelldb_path = extension_path .. 'adapter/codelldb'
+  local liblldb_path = extension_path .. 'lldb/lib/liblldb'
+  local this_os = vim.uv.os_uname().sysname;
+
+  -- The path is different on Windows
+  if this_os:find "Windows" then
+    codelldb_path = extension_path .. "adapter\\codelldb.exe"
+    liblldb_path = extension_path .. "lldb\\bin\\liblldb.dll"
+  else
+    -- The liblldb extension is .so for Linux and .dylib for MacOS
+    liblldb_path = liblldb_path .. (this_os == "Linux" and ".so" or ".dylib")
+  end
+
+  local cfg = require('rustaceanvim.config')
+  return {
+    dap = {
+      adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path),
+    },
+  }
+end
+
